@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-export type Persona = 'Approver' | 'Control Owner' | 'Automation Owner' | 'Executive';
+export type Persona = 'Approver' | 'Control Owner' | 'Automation Owner' | 'Requester';
 
 interface DashboardState {
   persona: Persona;

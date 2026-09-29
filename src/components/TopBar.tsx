@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
-import { Search, Bell } from 'lucide-react';
+import { Search, Bell, ChevronDown } from 'lucide-react';
 import { useDashboardStore, Persona } from '@/lib/store';
 import { useToast } from './Toast';
 import { NotificationPopup } from './NotificationPopup';
+import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
+import { cn } from '@/lib/utils';
 
 export const TopBar: React.FC = () => {
   const { persona, setPersona, setCommandPaletteOpen, hasNotifications, setHasNotifications, setActivePage } = useDashboardStore();
-  const personas: Persona[] = ['Approver', 'Control Owner', 'Automation Owner', 'Executive'];
+  const personas: Persona[] = ['Approver', 'Requester', 'Control Owner', 'Automation Owner'];
   const { addToast } = useToast();
   const [notifOpen, setNotifOpen] = useState(false);
 
@@ -38,15 +40,37 @@ export const TopBar: React.FC = () => {
 
         <div className="flex items-center gap-2 text-sm">
           <span className="text-text-faint text-xs">Viewing as:</span>
-          <select 
-            value={persona}
-            onChange={(e) => setPersona(e.target.value as Persona)}
-            className="bg-transparent text-text-ink font-medium focus:outline-none cursor-pointer"
-          >
-            {personas.map(p => (
-              <option key={p} value={p}>{p}</option>
-            ))}
-          </select>
+          
+          <DropdownMenu.Root>
+            <DropdownMenu.Trigger asChild>
+              <button className="flex items-center gap-1.5 bg-surface text-text-ink font-medium px-3 py-1.5 rounded-md border border-border/50 hover:bg-surface-raised transition-colors outline-none focus:ring-2 focus:ring-accent/50">
+                <span>{persona}</span>
+                <ChevronDown size={14} className="text-text-muted" />
+              </button>
+            </DropdownMenu.Trigger>
+            
+            <DropdownMenu.Portal>
+              <DropdownMenu.Content 
+                align="end"
+                className="min-w-[180px] bg-surface/80 backdrop-blur-xl border border-border/50 rounded-lg p-1 shadow-lg animate-fade-in z-50"
+              >
+                {personas.map(p => (
+                  <DropdownMenu.Item 
+                    key={p}
+                    onSelect={() => setPersona(p)}
+                    className={cn(
+                      "flex items-center px-3 py-2 text-sm rounded-md cursor-pointer outline-none transition-colors",
+                      p === persona 
+                        ? "bg-accent/10 text-accent font-medium" 
+                        : "text-text-ink hover:bg-surface-raised hover:text-text-ink"
+                    )}
+                  >
+                    {p}
+                  </DropdownMenu.Item>
+                ))}
+              </DropdownMenu.Content>
+            </DropdownMenu.Portal>
+          </DropdownMenu.Root>
         </div>
 
         <div className="flex items-center gap-2">
